@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Sói Ham Học - Cuộc Sống Không Kỉ Luật, Chỉ Có Việc Yêu Thích</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Canvas Confetti CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            obsidian: {
+              950: '#07090e',
+              900: '#0d1117',
+              800: '#161b22',
+              700: '#21262d',
+              600: '#30363d',
+            },
+            amberWolf: '#f59e0b',
+            emeraldWolf: '#10b981',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #07090e;
+      color: #e6edf3;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    /* Tùy chỉnh thanh cuộn siêu mỏng */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: #0d1117; }
+    ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #484f58; }
+
+    .glass-card {
+      background: rgba(22, 27, 34, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.4);
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(16, 185, 129, 0.15));
+      border-color: rgba(245, 158, 11, 0.4);
+      color: #f59e0b;
+      font-weight: 600;
+    }
+
+    .checkbox-custom:checked {
+      background-color: #10b981;
+      border-color: #10b981;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-black pb-20 md:pb-6">
+
+  <!-- TOP HEADER / THANH TRẠNG THÁI & 100 ĐIỂM -->
+  <header class="sticky top-0 z-40 bg-[#0d1117]/90 backdrop-blur-md border-b border-gray-800/80 px-4 py-3">
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-3">
+      
+      <!-- Brand & Triết lý sống -->
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-emerald-500 flex items-center justify-center text-xl shadow-lg shadow-amber-500/20">
+            🐺
+          </div>
+          <div>
+            <div class="flex items-center space-x-2">
+              <h1 class="font-bold text-lg text-white tracking-wide">SÓI HAM HỌC</h1>
+              <span class="text-xs px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30">Tuổi 36 Tự Tại</span>
+            </div>
+            <p id="quote-display" class="text-xs text-gray-400 italic line-clamp-1">"Cuộc sống không kỉ luật, chỉ có việc yêu thích mỗi ngày."</p>
+          </div>
+        </div>
+
+        <button onclick="randomQuote()" title="Đổi câu truyền cảm hứng" class="p-2 rounded-lg bg-gray-800 text-gray-300 hover:text-amber-400 transition text-xs flex items-center gap-1 md:hidden">
+          🎲
+        </button>
+      </div>
+
+      <!-- Thanh Điểm 100đ & Thao tác Quản lý dữ liệu -->
+      <div class="flex items-center justify-between md:justify-end gap-3 flex-wrap">
+        <!-- Điểm hôm nay -->
+        <div class="flex items-center gap-2 bg-gray-900/90 border border-gray-700/60 px-3 py-1.5 rounded-xl">
+          <span class="text-xs text-gray-400">Hôm nay:</span>
+          <span id="score-text" class="text-base font-extrabold text-emerald-400">0/100đ</span>
+          <span id="tier-badge" class="text-[11px] px-2 py-0.5 rounded-md bg-gray-800 text-gray-300 font-medium border border-gray-700">Khởi động ☕</span>
+        </div>
+
+        <!-- Chuỗi ngày Streak -->
+        <div class="flex items-center gap-1.5 bg-gray-900/90 border border-gray-700/60 px-3 py-1.5 rounded-xl">
+          <span class="text-amber-400 text-sm">🔥</span>
+          <span id="streak-count" class="text-sm font-bold text-gray-200">14 ngày</span>
+        </div>
+
+        <!-- Nút Quản Lý Dữ Liệu -->
+        <button onclick="openDataModal()" class="flex items-center gap-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-3 py-1.5 rounded-xl text-xs font-semibold transition active:scale-95">
+          <span>⚙️</span>
+          <span>Dữ liệu</span>
+        </button>
+
+        <button onclick="randomQuote()" class="hidden md:flex items-center gap-1 text-xs text-gray-400 hover:text-amber-400 p-2 rounded-lg bg-gray-800/80">
+          <span>🎲 Đổi câu</span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Thanh tiến độ 100đ trực quan -->
+    <div class="max-w-6xl mx-auto mt-2.5">
+      <div class="w-full bg-gray-800/80 rounded-full h-1.5 overflow-hidden">
+        <div id="progress-bar-fill" class="bg-gradient-to-r from-amber-500 via-emerald-400 to-teal-300 h-1.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- NỘI DUNG CHÍNH (MAIN CONTAINER) -->
+  <main class="max-w-6xl mx-auto w-full px-3 md:px-6 py-5 flex-1">
+    
+    <!-- DESKTOP / TABLET TABS NAVIGATION (Thanh Tab trên PC/Tablet) -->
+    <nav class="hidden md:flex items-center gap-2 overflow-x-auto pb-3 mb-6 border-b border-gray-800 text-sm">
+      <button onclick="switchTab('today')" id="tab-today" class="tab-btn active px-3.5 py-2 rounded-xl border border-transparent transition flex items-center gap-1.5">
+        <span>⭐</span> Hôm Nay (100đ)
+      </button>
+      <button onclick="switchTab('teaching')" id="tab-teaching" class="tab-btn px-3.5 py-2 rounded-xl border border-transparent text-gray-400 hover:text-gray-200 transition flex items-center gap-1.5">
+        <span>🎓</span> Dạy Học
+      </button>
+      <button onclick="switchTab('study')" id="tab-study" class="tab-btn px-3.5 py-2 rounded-xl border border-transparent text-gray-400 hover:text-gray-200 transition flex items-center gap-1.5">
+        <span>⏱️</span> Học 90 Phút
+      </button>
+      <button onclick="switchTab('fitness')" id="tab-fitness" class="tab-btn px-3.5 py-2 rounded-xl border border-transparent text-gray-400 hover:text-gray-200 transition flex items-center gap-1.5">
+        <span>🏃</span> Thể Chất
+      </button>
+      <button onclick="switchTab('kids')" id="tab-kids" class="tab-btn px-3.5 py-2 rounded-xl border border-transparent text-gray-400 hover:text-gray-200 transition flex items-center gap-1.5">
+        <span>👨‍👧‍👦</span> 3 Con Yêu
+      </button>
+      <button onclick="switchTab('business')" id="tab-business" class="tab-btn px-3.5 py-2 rounded-xl border border-transparent text-gray-400 hover:text-gray-200 transition flex items-center gap-1.5">
+        <span>💼</span> Kinh Doanh
+      </button>
+      <button onclick="switchTab('connect')" id="tab-connect" class="tab-btn px-3.5 py-2 rounded-xl border border-transparent text-gray-400 hover:text-gray-200 transition flex items-center gap-1.5">
+        <span>📞</span> Kết Nối
+      </button>
+      <button onclick="switchTab('finance')" id="tab-finance" class="tab-btn px-3.5 py-2 rounded-xl border border-transparent text-gray-400 hover:text-gray-200 transition flex items-center gap-1.5">
+        <span>💰</span> Tài Chính
+      </button>
+      <button onclick="switchTab('journal')" id="tab-journal" class="tab-btn px-3.5 py-2 rounded-xl border border-transparent text-gray-400 hover:text-gray-200 transition flex items-center gap-1.5">
+        <span>✍️</span> Nhật Ký 1 Phút
+      </button>
+    </nav>
+
+    <!-- ==================== TAB 1: HÔM NAY (100 ĐIỂM) ==================== -->
+    <div id="content-today" class="tab-content space-y-6">
+      
+      <!-- Big 3 Việc Yêu Thích Hôm Nay (Ghim lên đầu) -->
+      <section class="glass-card rounded-2xl p-4 md:p-5 border border-amber-500/20">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <span class="text-amber-400 font-bold text-lg">📌</span>
+            <h2 class="font-bold text-base text-gray-100">BIG 3: Ba việc tôi hào hứng làm nhất hôm nay</h2>
+          </div>
+          <span class="text-xs text-amber-400/90 font-medium">Tự do • Không ép buộc</span>
+        </div>
+        
+        <div class="space-y-2.5" id="big3-list">
+          <div class="flex items-center gap-3 bg-gray-900/60 p-3 rounded-xl border border-gray-800">
+            <input type="checkbox" id="big3-1" onchange="toggleTask('big3-1', 5)" class="checkbox-custom w-5 h-5 rounded cursor-pointer border-gray-700 bg-gray-800 text-emerald-500 focus:ring-0">
+            <input type="text" id="big3-text-1" value="Lên lớp với tâm thế truyền cảm hứng, dùng slide AI mới soạn" class="bg-transparent text-sm w-full focus:outline-none text-gray-200" placeholder="Việc yêu thích 1...">
+            <span class="text-xs font-semibold text-amber-400 shrink-0">+5đ</span>
+          </div>
+
+          <div class="flex items-center gap-3 bg-gray-900/60 p-3 rounded-xl border border-gray-800">
+            <input type="checkbox" id="big3-2" onchange="toggleTask('big3-2', 5)" class="checkbox-custom w-5 h-5 rounded cursor-pointer border-gray-700 bg-gray-800 text-emerald-500 focus:ring-0">
+            <input type="text" id="big3-text-2" value="30 phút nghe Podcast Tiếng Anh và học công cụ AI mới" class="bg-transparent text-sm w-full focus:outline-none text-gray-200" placeholder="Việc yêu thích 2...">
+            <span class="text-xs font-semibold text-amber-400 shrink-0">+5đ</span>
+          </div>
+
+          <div class="flex items-center gap-3 bg-gray-900/60 p-3 rounded-xl border border-gray-800">
+            <input type="checkbox" id="big3-3" onchange="toggleTask('big3-3', 5)" class="checkbox-custom w-5 h-5 rounded cursor-pointer border-gray-700 bg-gray-800 text-emerald-500 focus:ring-0">
+            <input type="text" id="big3-text-3" value="Tối cùng Bảo Nhi, Bảo Ngân, Minh Hoàng đọc sách & vui chơi" class="bg-transparent text-sm w-full focus:outline-none text-gray-200" placeholder="Việc yêu thích 3...">
+            <span class="text-xs font-semibold text-amber-400 shrink-0">+5đ</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Danh Sách 8 Trụ Cột Hoạt Động (Phân bổ chuẩn 100đ) -->
+      <section class="glass-card rounded-2xl p-4 md:p-5">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h2 class="font-bold text-base text-gray-100 flex items-center gap-2">
+              <span>🎯</span> Thang Điểm Sống Vui 100đ
+            </h2>
+            <p class="text-xs text-gray-400">Tick khi đã tận hưởng trọn vẹn việc đó</p>
+          </div>
+          <button onclick="checkAllDaily()" class="text-xs px-2.5 py-1 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 transition">Tick nhanh</button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="daily-tasks-container">
+          
+          <!-- Thể chất 20đ -->
+          <div class="p-3.5 rounded-xl bg-gray-900/70 border border-gray-800/80 flex items-start justify-between gap-3">
+            <div class="flex items-start gap-3">
+              <input type="checkbox" id="task-run" onchange="toggleTask('task-run', 10)" class="checkbox-custom mt-0.5 w-5 h-5 rounded cursor-pointer bg-gray-800 border-gray-700">
+              <div>
+                <span class="text-sm font-semibold text-gray-200 block">🏃 Chạy bộ đón gió sớm 60 phút</span>
+                <span class="text-xs text-gray-400">Tận hưởng không khí mát lành, sảng khoái tuổi 36</span>
+              </div>
+            </div>
+            <span class="text-xs font-bold text-emerald-400 shrink-0 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">+10đ</span>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-gray-900/70 border border-gray-800/80 flex items-start justify-between gap-3">
+            <div class="flex items-start gap-3">
+              <input type="checkbox" id="task-zen" onchange="toggleTask('task-zen', 10)" class="checkbox-custom mt-0.5 w-5 h-5 rounded cursor-pointer bg-gray-800 border-gray-700">
+              <div>
+                <span class="text-sm font-semibold text-gray-200 block">🧘 Thiền 20 phút & Giấc ngủ ngon</span>
+                <span class="text-xs text-gray-400">Dậy trước 5h00 tự nhiên & đi ngủ trước 22h00</span>
+              </div>
+            </div>
+            <span class="text-xs font-bold text-emerald-400 shrink-0 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">+10đ</span>
+          </div>
+
+          <!-- Học tập 90p: 20đ -->
+          <div class="p-3.5 rounded-xl bg-gray-900/70 border border-gray-800/80 flex items-start justify-between gap-3">
+            <div class="flex items-start gap-3">
+              <input type="checkbox" id="task-study-eng" onchange="toggleTask('task-study-eng', 7)" class="checkbox-custom mt-0.5 w-5 h-5 rounded cursor-pointer bg-gray-800 border-gray-700">
+              <div>
+                <span class="text-sm font-semibold text-gray-200 block">🇬🇧 30 phút Tiếng Anh đam mê</span>
+                <span class="text-xs text-gray-400">Nghe nói, podcast, đọc tài liệu mở mang đầu óc</span>
+              </div>
+            </div>
+            <span class="text-xs font-bold text-emerald-400 shrink-0 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">+7đ</span>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-gray-900/70 border border-gray-800/80 flex items-start justify-between gap-3">
+            <div class="flex items-start gap-3">
+              <input type="checkbox" id="task-study-ai" onchange="toggleTask('task-study-ai', 13)" class="checkbox-custom mt-0.5 w-5 h-5 rounded cursor-pointer bg-gray-800 border-gray-700">
+              <div>
+                <span class="text-sm font-semibold text-gray-200 block">🤖 60 phút Tin học, AI & Chuyên môn</span>
+                <span class="text-xs text-gray-400">Thử công cụ AI mới và nâng cao năng lực dạy học</span>
+              </div>
+            </div>
+            <span class="text-xs font-bold text-emerald-400 shrink-0 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">+13đ</span>
+          </div>
+
+          <!-- Gia đình 20đ -->
+          <div class="p-3.5 rounded-xl bg-gray-900/70 border border-gray-800/80 flex items-start justify-between gap-3 md:col-span-2">
+            <div class="flex items-start gap-3">
+              <input type="checkbox" id="task-kids" onchange="toggleTask('task-kids', 20)" class="checkbox-custom mt-0.5 w-5 h-5 rounded cursor-pointer bg-gray-800 border-gray-700">
+              <div>
+                <span class="text-sm font-semibold text-gray-200 block">👨‍👧‍👦 Trọn vẹn yêu thương cùng 3 con</span>
+                <span class="text-xs text-gray-400">Đồng hành chất lượng cùng Bảo Nhi, Bảo Ngân và Minh Hoàng (học, đọc sách, tâm sự)</span>
+              </div>
+            </div>
+            <span class="text-xs font-bold text-amber-400 shrink-0 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">+20đ</span>
+          </div>
+
+          <!-- Dạy học 15đ -->
+          <div class="p-3.5 rounded-xl bg-gray-900/70 border border-gray-800/80 flex items-start justify-between gap-3">
+            <div class="flex items-start gap-3">
+              <input type="checkbox" id="task-teach" onchange="toggleTask('task-teach', 15)" class="checkbox-custom mt-0.5 w-5 h-5 rounded cursor-pointer bg-gray-800 border-gray-700">
+              <div>
+                <span class="text-sm font-semibold text-gray-200 block">🎓 Dạy học & Sáng kiến sư phạm</span>
+                <span class="text-xs text-gray-400">Giờ dạy đầy hứng khởi, hoàn thành việc Đoàn trường</span>
+              </div>
+            </div>
+            <span class="text-xs font-bold text-emerald-400 shrink-0 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">+15đ</span>
+          </div>
+
+          <!-- Kinh doanh 10đ -->
+          <div class="p-3.5 rounded-xl bg-gray-900/70 border border-gray-800/80 flex items-start justify-between gap-3">
+            <div class="flex items-start gap-3">
+              <input type="checkbox" id="task-biz" onchange="toggleTask('task-biz', 10)" class="checkbox-custom mt-0.5 w-5 h-5 rounded cursor-pointer bg-gray-800 border-gray-700">
+              <div>
+                <span class="text-sm font-semibold text-gray-200 block">💼 Kinh doanh số & TikTok/Shopee Affiliate</span>
+                <span class="text-xs text-gray-400">Ra ý tưởng, quay/đăng 1 video hoặc tối ưu link bio</span>
+              </div>
+            </div>
+            <span class="text-xs font-bold text-emerald-400 shrink-0 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">+10đ</span>
+          </div>
+
+          <!-- Kết nối 5đ -->
+          <div class="p-3.5 rounded-xl bg-gray-900/70 border border-gray-800/80 flex items-start justify-between gap-3">
+            <div class="flex items-start gap-3">
+              <input type="checkbox" id="task-connect" onchange="toggleTask('task-connect', 5)" class="checkbox-custom mt-0.5 w-5 h-5 rounded cursor-pointer bg-gray-800 border-gray-700">
+              <div>
+                <span class="text-sm font-semibold text-gray-200 block">📞 Kết nối ấm áp</span>
+                <span class="text-xs text-gray-400">Gọi điện, nhắn tin cho 1 người thân/đồng nghiệp</span>
+              </div>
+            </div>
+            <span class="text-xs font-bold text-emerald-400 shrink-0 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">+5đ</span>
+          </div>
+
+          <!-- Tài chính & Nhật ký 5đ -->
+          <div class="p-3.5 rounded-xl bg-gray-900/70 border border-gray-800/80 flex items-start justify-between gap-3">
+            <div class="flex items-start gap-3">
+              <input type="checkbox" id="task-finance-journal" onchange="toggleTask('task-finance-journal', 5)" class="checkbox-custom mt-0.5 w-5 h-5 rounded cursor-pointer bg-gray-800 border-gray-700">
+              <div>
+                <span class="text-sm font-semibold text-gray-200 block">💰 Tài chính & Nhật ký 1 phút</span>
+                <span class="text-xs text-gray-400">Ghi chi tiêu, tích sản & 3 câu hỏi trước giờ ngủ</span>
+              </div>
+            </div>
+            <span class="text-xs font-bold text-emerald-400 shrink-0 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">+5đ</span>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Trợ Lý AI Đồng Hành Trong Ngày -->
+      <section class="glass-card rounded-2xl p-4 md:p-5 border border-emerald-500/20">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <span class="text-emerald-400 text-lg">🤖</span>
+            <h3 class="font-bold text-sm text-gray-100">AI Huấn Luyện Viên Sống Vui</h3>
+          </div>
+          <span class="text-xs text-gray-400">Nhắc nhở nhẹ nhàng, không phán xét</span>
+        </div>
+        <p id="ai-daily-message" class="text-sm text-gray-300 leading-relaxed bg-gray-900/80 p-3.5 rounded-xl border border-gray-800">
+          "Chào Sói Ham Học! Hôm nay không có áp lực nào cả. Chỉ cần chọn việc bạn thích nhất, đắm mình vào đó và tận hưởng từng phút giây bên học trò và 3 con yêu!"
+        </p>
+        <div class="mt-3 flex gap-2">
+          <button onclick="generateAiCoachMessage('morning')" class="text-xs px-3 py-1.5 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/30 hover:bg-amber-500/20 transition">
+            🌅 Nhắn nhủ buổi sáng
+          </button>
+          <button onclick="generateAiCoachMessage('evening')" class="text-xs px-3 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 transition">
+            🌙 Lắng đọng buổi tối
+          </button>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ==================== TAB 2: DẠY HỌC ==================== -->
+    <div id="content-teaching" class="tab-content hidden space-y-5">
+      <div class="glass-card rounded-2xl p-5 border border-indigo-500/30">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="font-bold text-base text-indigo-300 flex items-center gap-2">
+            <span>🎓</span> Quản Lý Giảng Dạy & Sáng Kiến AI
+          </h2>
+          <span class="text-xs text-indigo-400 bg-indigo-500/10 px-2 py-1 rounded">Sư phạm hạnh phúc</span>
+        </div>
+        
+        <!-- Ô Trợ lý lên việc sư phạm -->
+        <div class="bg-indigo-950/30 border border-indigo-500/20 rounded-xl p-4 mb-4">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold text-indigo-300">💡 TRỢ LÝ SƯ PHẠM GỢI Ý VIỆC HÔM NAY:</span>
+            <button onclick="addTeachingTaskToToday()" class="text-xs text-indigo-400 hover:text-white underline">+ Đưa vào Hôm nay</button>
+          </div>
+          <p id="teaching-ai-suggestion" class="text-sm text-gray-300 italic">"Ứng dụng ChatGPT soạn 3 câu hỏi trắc nghiệm mở đầu bài giảng gây tò mò cho học sinh."</p>
+        </div>
+
+        <div class="space-y-3">
+          <label class="block text-xs font-semibold text-gray-400">Ghi chú công tác chuyên môn & Đoàn trường:</label>
+          <textarea id="teaching-notes" rows="4" class="w-full bg-gray-900 border border-gray-700 rounded-xl p-3 text-sm text-gray-200 focus:outline-none focus:border-indigo-500" placeholder="Soạn bài bài nào? Nhiệm vụ Đoàn cần làm gì? Ý tưởng đổi mới bài dạy..."></textarea>
+          <button onclick="saveTeachingNotes()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition">Lưu ghi chú dạy học</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 3: HỌC TẬP 90 PHÚT ==================== -->
+    <div id="content-study" class="tab-content hidden space-y-5">
+      <div class="glass-card rounded-2xl p-5 border border-emerald-500/30">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="font-bold text-base text-emerald-300 flex items-center gap-2">
+            <span>⏱️</span> 90 Phút Tò Mò – Học Tập Vì Đam Mê
+          </h2>
+          <span class="text-xs bg-emerald-500/10 text-emerald-400 px-2.5 py-1 rounded-full">30m Anh • 30m AI • 30m Nghề</span>
+        </div>
+
+        <!-- Đồng Hồ Pomodoro 30 Phút Thực Tế -->
+        <div class="bg-gray-900/80 border border-gray-800 rounded-2xl p-6 text-center">
+          <div class="text-xs text-gray-400 uppercase tracking-widest font-semibold mb-2">Đồng hồ tập trung (Phiên 30 phút)</div>
+          <div id="timer-display" class="text-5xl md:text-6xl font-mono font-extrabold text-emerald-400 mb-4 tracking-wider">30:00</div>
+          
+          <div class="flex items-center justify-center gap-3">
+            <button id="btn-timer-start" onclick="toggleStudyTimer()" class="px-6 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-sm transition">
+              Bắt đầu học
+            </button>
+            <button onclick="resetStudyTimer()" class="px-4 py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 text-sm font-semibold transition">
+              Đặt lại
+            </button>
+          </div>
+        </div>
+
+        <!-- Ô Nhật ký học tập nhanh -->
+        <div class="mt-4">
+          <label class="block text-xs font-semibold text-gray-400 mb-1.5">Hôm nay Sói học được điều gì mới?</label>
+          <textarea id="study-diary" rows="3" class="w-full bg-gray-900 border border-gray-700 rounded-xl p-3 text-sm text-gray-200 focus:outline-none focus:border-emerald-500" placeholder="1 từ vựng tiếng Anh hay, 1 thủ thuật Prompt AI đỉnh, hoặc 1 phương pháp dạy mới..."></textarea>
+          <button onclick="saveStudyDiary()" class="mt-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition">Lưu vào kho tri thức (+XP)</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 4: THỂ CHẤT ==================== -->
+    <div id="content-fitness" class="tab-content hidden space-y-5">
+      <div class="glass-card rounded-2xl p-5 border border-rose-500/30">
+        <h2 class="font-bold text-base text-rose-300 flex items-center gap-2 mb-3">
+          <span>🏃</span> Thể Chất Tuổi 36 – Khỏe Để Tự Do
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div class="bg-gray-900/80 p-4 rounded-xl border border-gray-800">
+            <span class="text-xs text-gray-400 block mb-1">Chạy bộ 60 phút</span>
+            <span class="text-xl font-bold text-rose-400">10 km / tuần</span>
+            <p class="text-xs text-gray-400 mt-1">Đón bình minh, tái tạo tế bào</p>
+          </div>
+          <div class="bg-gray-900/80 p-4 rounded-xl border border-gray-800">
+            <span class="text-xs text-gray-400 block mb-1">Thiền định tĩnh lặng</span>
+            <span class="text-xl font-bold text-teal-400">20 Phút</span>
+            <p class="text-xs text-gray-400 mt-1">Buông bỏ suy nghĩ vẩn vơ</p>
+          </div>
+          <div class="bg-gray-900/80 p-4 rounded-xl border border-gray-800">
+            <span class="text-xs text-gray-400 block mb-1">Kỷ luật giấc ngủ</span>
+            <span class="text-xl font-bold text-amber-400">21:45 - 04:45</span>
+            <p class="text-xs text-gray-400 mt-1">Ngủ sâu, dậy tỉnh táo</p>
+          </div>
+        </div>
+
+        <div class="mt-4 p-4 rounded-xl bg-rose-950/20 border border-rose-500/20">
+          <span class="text-xs font-bold text-rose-300 block mb-1">LỜI NHẮC CỦA SÓI:</span>
+          <p class="text-xs text-gray-300">Không chạy vì KPI, chạy vì cảm giác chân chạm đất và gió lùa qua vai. Nếu mệt thì đi bộ, không ép uổng thân xác!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 5: GIA ĐÌNH (3 CON) ==================== -->
+    <div id="content-kids" class="tab-content hidden space-y-5">
+      <div class="glass-card rounded-2xl p-5 border border-amber-500/30">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h2 class="font-bold text-base text-amber-300 flex items-center gap-2">
+              <span>👨‍👧‍👦</span> Kho Báu Cuộc Đời: Bảo Nhi • Bảo Ngân • Minh Hoàng
+            </h2>
+            <p class="text-xs text-gray-400">Mỗi đứa trẻ là một vũ trụ riêng biệt cần sự thấu hiểu</p>
+          </div>
+        </div>
+
+        <!-- 3 Thẻ Riêng Biệt Cho Từng Bé -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Bé 1: Bảo Nhi -->
+          <div class="bg-gray-900/80 p-4 rounded-xl border border-amber-500/20 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-sm text-amber-400">🌸 Bảo Nhi</span>
+              <span class="text-[10px] bg-amber-500/10 text-amber-300 px-2 py-0.5 rounded">Trưởng thành</span>
+            </div>
+            <textarea id="note-baonhi" rows="3" class="w-full bg-gray-950 border border-gray-800 rounded-lg p-2 text-xs text-gray-200 focus:outline-none focus:border-amber-400" placeholder="Tâm sự, lắng nghe chuyện học tập của Bảo Nhi hôm nay..."></textarea>
+          </div>
+
+          <!-- Bé 2: Bảo Ngân -->
+          <div class="bg-gray-900/80 p-4 rounded-xl border border-emerald-500/20 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-sm text-emerald-400">🌼 Bảo Ngân</span>
+              <span class="text-[10px] bg-emerald-500/10 text-emerald-300 px-2 py-0.5 rounded">Tò mò</span>
+            </div>
+            <textarea id="note-baongan" rows="3" class="w-full bg-gray-950 border border-gray-800 rounded-lg p-2 text-xs text-gray-200 focus:outline-none focus:border-emerald-400" placeholder="Đọc sách gì cùng Bảo Ngân? Con hỏi câu gì bất ngờ?..."></textarea>
+          </div>
+
+          <!-- Bé 3: Minh Hoàng -->
+          <div class="bg-gray-900/80 p-4 rounded-xl border border-blue-500/20 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-sm text-blue-400">🦁 Minh Hoàng</span>
+              <span class="text-[10px] bg-blue-500/10 text-blue-300 px-2 py-0.5 rounded">Hiếu động</span>
+            </div>
+            <textarea id="note-minhhoang" rows="3" class="w-full bg-gray-950 border border-gray-800 rounded-lg p-2 text-xs text-gray-200 focus:outline-none focus:border-blue-400" placeholder="Chơi lego, vận động, ôm ấp Minh Hoàng trước khi ngủ..."></textarea>
+          </div>
+        </div>
+
+        <button onclick="saveKidsNotes()" class="mt-4 px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-black font-bold text-xs transition">
+          Lưu khoảnh khắc yêu thương (+20đ)
+        </button>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 6: KINH DOANH ==================== -->
+    <div id="content-business" class="tab-content hidden space-y-5">
+      <div class="glass-card rounded-2xl p-5 border border-purple-500/30">
+        <h2 class="font-bold text-base text-purple-300 flex items-center gap-2 mb-3">
+          <span>💼</span> Kinh Doanh Tự Do – TikTok & Shopee Affiliate
+        </h2>
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+          <div class="bg-gray-900 p-3 rounded-xl border border-gray-800 text-center">
+            <span class="text-[11px] text-gray-400 block">Ý tưởng kịch bản</span>
+            <span id="biz-ideas-count" class="text-lg font-bold text-purple-400">3 kịch bản</span>
+          </div>
+          <div class="bg-gray-900 p-3 rounded-xl border border-gray-800 text-center">
+            <span class="text-[11px] text-gray-400 block">Video đã đăng</span>
+            <span class="text-lg font-bold text-emerald-400">12 clip</span>
+          </div>
+          <div class="bg-gray-900 p-3 rounded-xl border border-gray-800 text-center">
+            <span class="text-[11px] text-gray-400 block">Hoa hồng ước tính</span>
+            <span class="text-lg font-bold text-amber-400">2.450.000đ</span>
+          </div>
+          <div class="bg-gray-900 p-3 rounded-xl border border-gray-800 text-center">
+            <span class="text-[11px] text-gray-400 block">Đơn hàng mới</span>
+            <span class="text-lg font-bold text-cyan-400">18 đơn</span>
+          </div>
+        </div>
+
+        <div class="p-4 bg-purple-950/20 border border-purple-500/20 rounded-xl">
+          <span class="text-xs font-bold text-purple-300 block mb-1">GỢI Ý KỊCH BẢN VIDEO NHANH:</span>
+          <p class="text-xs text-gray-300 italic">"3 cuốn sách nuôi dạy con không nước mắt mà thầy giáo 36 tuổi tâm đắc nhất." (Hook 3 giây đầu gây tò mò).</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 7: KẾT NỐI ==================== -->
+    <div id="content-connect" class="tab-content hidden space-y-5">
+      <div class="glass-card rounded-2xl p-5 border border-cyan-500/30">
+        <h2 class="font-bold text-base text-cyan-300 flex items-center gap-2 mb-3">
+          <span>📞</span> Kết Nối Chân Thành – Không Để Phai Nhạt
+        </h2>
+        <p class="text-xs text-gray-400 mb-4">Mỗi ngày dành 5 phút gọi điện hoặc nhắn một tin chân tình cho 1 người quan trọng</p>
+        
+        <div class="space-y-2">
+          <div class="flex items-center justify-between p-3 rounded-xl bg-gray-900/80 border border-gray-800">
+            <div>
+              <span class="text-sm font-semibold text-gray-200 block">Mẹ / Bố</span>
+              <span class="text-xs text-emerald-400">Đã gọi hôm qua</span>
+            </div>
+            <button onclick="pingCall('Gia đình')" class="text-xs px-3 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-200">Đã gọi</button>
+          </div>
+          <div class="flex items-center justify-between p-3 rounded-xl bg-gray-900/80 border border-gray-800">
+            <div>
+              <span class="text-sm font-semibold text-gray-200 block">Đồng nghiệp thân thiết / Thầy cô trường</span>
+              <span class="text-xs text-amber-400">Chưa liên lạc 5 ngày</span>
+            </div>
+            <button onclick="pingCall('Đồng nghiệp')" class="text-xs px-3 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Gọi ngay</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 8: TÀI CHÍNH ==================== -->
+    <div id="content-finance" class="tab-content hidden space-y-5">
+      <div class="glass-card rounded-2xl p-5 border border-emerald-500/30">
+        <h2 class="font-bold text-base text-emerald-300 flex items-center gap-2 mb-3">
+          <span>💰</span> Tài Chính & Đầu Tư Tự Do
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-gray-900/80 p-4 rounded-xl border border-gray-800">
+            <span class="text-xs text-gray-400 block mb-1">Dòng tiền hôm nay:</span>
+            <div class="flex gap-2">
+              <input type="number" id="finance-amount" placeholder="Số tiền..." class="bg-gray-950 border border-gray-700 rounded-lg p-2 text-xs w-full text-white">
+              <button onclick="logFinance()" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold shrink-0">Ghi sổ</button>
+            </div>
+          </div>
+          <div class="bg-gray-900/80 p-4 rounded-xl border border-gray-800 flex flex-col justify-center">
+            <span class="text-xs text-gray-400">Tích sản đầu tư:</span>
+            <span class="text-sm font-semibold text-gray-200">Đều đặn mỗi tháng mua chứng chỉ quỹ / tích sản</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 9: NHẬT KÝ 1 PHÚT ==================== -->
+    <div id="content-journal" class="tab-content hidden space-y-5">
+      <div class="glass-card rounded-2xl p-5 border border-amber-500/30">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="font-bold text-base text-amber-300 flex items-center gap-2">
+            <span>✍️</span> Nhật Ký 1 Phút Trước Giờ Ngủ
+          </h2>
+          <span class="text-xs text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">Thảnh thơi buông bỏ</span>
+        </div>
+        <p class="text-xs text-gray-400 mb-4">Chỉ 3 câu trả lời ngắn gọn để khép lại một ngày thật nhẹ nhõm:</p>
+
+        <div class="space-y-3">
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 mb-1">1. Hôm nay tôi làm được việc gì thấy vui nhất?</label>
+            <input type="text" id="journal-q1" class="w-full bg-gray-900 border border-gray-700 rounded-xl p-2.5 text-xs text-gray-200 focus:outline-none focus:border-amber-400" placeholder="Ví dụ: Giờ dạy vui vẻ, nụ cười của Bảo Ngân...">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 mb-1">2. Điều gì chưa xong mà không cần áy náy?</label>
+            <input type="text" id="journal-q2" class="w-full bg-gray-900 border border-gray-700 rounded-xl p-2.5 text-xs text-gray-200 focus:outline-none focus:border-amber-400" placeholder="Ngày mai còn dài, việc gì để mai làm tiếp...">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 mb-1">3. Sáng mai thức dậy, tôi mong chờ điều gì nhất?</label>
+            <input type="text" id="journal-q3" class="w-full bg-gray-900 border border-gray-700 rounded-xl p-2.5 text-xs text-gray-200 focus:outline-none focus:border-amber-400" placeholder="Chạy bộ đón gió, ly cà phê thơm...">
+          </div>
+
+          <button onclick="saveOneMinuteJournal()" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-emerald-500 text-black font-extrabold text-xs transition active:scale-98 mt-2">
+            Gửi nhật ký & Chúc ngủ ngon (+5đ)
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- BOTTOM NAVIGATION BAR (Thanh điều hướng dưới đáy màn hình trên Mobile) -->
+  <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#0d1117]/95 backdrop-blur-lg border-t border-gray-800/80 px-2 py-2 flex items-center justify-around text-center">
+    <button onclick="switchTab('today')" id="m-tab-today" class="flex flex-col items-center text-amber-400 font-semibold">
+      <span class="text-base">⭐</span>
+      <span class="text-[10px]">Hôm Nay</span>
+    </button>
+    <button onclick="switchTab('teaching')" id="m-tab-teaching" class="flex flex-col items-center text-gray-400 hover:text-gray-200">
+      <span class="text-base">🎓</span>
+      <span class="text-[10px]">Dạy Học</span>
+    </button>
+    <button onclick="switchTab('study')" id="m-tab-study" class="flex flex-col items-center text-gray-400 hover:text-gray-200">
+      <span class="text-base">⏱️</span>
+      <span class="text-[10px]">Học 90p</span>
+    </button>
+    <button onclick="switchTab('kids')" id="m-tab-kids" class="flex flex-col items-center text-gray-400 hover:text-gray-200">
+      <span class="text-base">👨‍👧‍👦</span>
+      <span class="text-[10px]">3 Con</span>
+    </button>
+    <button onclick="switchTab('journal')" id="m-tab-journal" class="flex flex-col items-center text-gray-400 hover:text-gray-200">
+      <span class="text-base">✍️</span>
+      <span class="text-[10px]">Nhật Ký</span>
+    </button>
+  </nav>
+
+  <!-- ==================== MODAL: QUẢN LÝ DỮ LIỆU & RESET ==================== -->
+  <div id="data-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="glass-card max-w-lg w-full rounded-2xl p-5 md:p-6 border border-emerald-500/40 relative max-h-[90vh] overflow-y-auto">
+      
+      <div class="flex items-center justify-between border-b border-gray-800 pb-3 mb-4">
+        <div class="flex items-center gap-2">
+          <span class="text-lg">⚙️</span>
+          <h3 class="font-bold text-base text-white">Quản Lý & Reset Dữ Liệu</h3>
+        </div>
+        <button onclick="closeDataModal()" class="text-gray-400 hover:text-white p-1 text-sm">✕</button>
+      </div>
+
+      <div class="space-y-4 text-xs text-gray-300">
+        
+        <!-- Mục 1: Bắt đầu ngày mới -->
+        <div class="p-3.5 rounded-xl bg-gray-900 border border-gray-800">
+          <h4 class="font-bold text-emerald-400 text-sm mb-1">🌅 Bắt đầu ngày mới (Reset điểm về 0)</h4>
+          <p class="text-gray-400 mb-2.5">Xóa các tick hôm nay để bắt đầu ngày mới 0/100đ, nhưng **giữ nguyên chuỗi ngày liên tiếp (Streak 🔥)**.</p>
+          <button onclick="resetDailyNewDay()" class="px-3.5 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 font-semibold transition">
+            Bắt đầu ngày mới ngay
+          </button>
+        </div>
+
+        <!-- Mục 2: Sao lưu dữ liệu -->
+        <div class="p-3.5 rounded-xl bg-gray-900 border border-gray-800">
+          <h4 class="font-bold text-amber-400 text-sm mb-1">💾 Sao lưu dữ liệu (Backup)</h4>
+          <p class="text-gray-400 mb-2.5">Tải tệp sao lưu hoặc copy chuỗi dữ liệu để chuyển sang máy khác mà không bị mất dữ liệu.</p>
+          <div class="flex gap-2">
+            <button onclick="exportDataJson()" class="px-3 py-1.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 font-semibold transition">
+              Tải file backup (.json)
+            </button>
+            <button onclick="copyDataText()" class="px-3 py-1.5 rounded-lg bg-gray-800 text-gray-300 hover:bg-gray-700 transition">
+              Copy mã dữ liệu
+            </button>
+          </div>
+        </div>
+
+        <!-- Mục 3: Khôi phục dữ liệu -->
+        <div class="p-3.5 rounded-xl bg-gray-900 border border-gray-800">
+          <h4 class="font-bold text-cyan-400 text-sm mb-1">📥 Khôi phục dữ liệu (Restore)</h4>
+          <p class="text-gray-400 mb-2">Dán chuỗi dữ liệu đã sao lưu vào ô dưới đây để khôi phục:</p>
+          <textarea id="import-json-input" rows="2" class="w-full bg-gray-950 border border-gray-700 rounded-lg p-2 text-[11px] text-gray-200 focus:outline-none focus:border-cyan-400 font-mono" placeholder='Dán mã sao lưu JSON vào đây...'></textarea>
+          <button onclick="importDataJson()" class="mt-2 px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-semibold transition">
+            Nạp lại dữ liệu
+          </button>
+        </div>
+
+        <!-- Mục 4: Xóa trắng toàn bộ -->
+        <div class="p-3.5 rounded-xl bg-red-950/20 border border-red-500/30">
+          <h4 class="font-bold text-red-400 text-sm mb-1">⚠️ Xóa trắng toàn bộ (Factory Reset)</h4>
+          <p class="text-gray-400 mb-2.5">Đưa điểm về 0, chuỗi streak về 0, xóa toàn bộ ghi chú như khi mới cài app.</p>
+          <button onclick="factoryReset()" class="px-3.5 py-1.5 rounded-lg bg-red-600/20 text-red-300 border border-red-500/40 hover:bg-red-600 hover:text-white font-semibold transition">
+            Xóa trắng làm lại từ đầu
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SCRIPT LOGIC JAVASCRIPT ĐỒNG BỘ LOCALSTORAGE & ÂM THANH -->
+  <script>
+    // BỘ CÂU TRUYỀN CẢM HỨNG SỐNG VUI
+    const quotes = [
+      "Cuộc sống không kỉ luật, chỉ có việc yêu thích mỗi ngày.",
+      "Chạy bộ vì sảng khoái đón gió sớm, không phải vì nghĩa vụ ép buộc.",
+      "Học vì tò mò, dạy vì yêu thương học trò.",
+      "Bên 3 con là khoảnh khắc vô giá nhất cuộc đời, không phải trách nhiệm.",
+      "Không cần hoàn hảo, chỉ cần mỗi ngày đều thấy hào hứng!",
+      "Làm điều mình say mê, sống đời nhẹ tênh như mây trời."
+    ];
+
+    let appState = {
+      score: 0,
+      streak: 14,
+      lastDate: new Date().toISOString().slice(0, 10),
+      tasks: {},
+      big3: ["", "", ""],
+      notes: {
+        teaching: "",
+        studyDiary: "",
+        baonhi: "",
+        baongan: "",
+        minhhoang: "",
+        journal: { q1: "", q2: "", q3: "" }
+      }
+    };
+
+    // KHỞI CHẠY KHI MỞ TRANG
+    window.addEventListener('DOMContentLoaded', () => {
+      loadData();
+      checkNewDayAuto();
+      updateUI();
+    });
+
+    // 1. TẢI DỮ LIỆU TỪ LOCALSTORAGE
+    function loadData() {
+      const saved = localStorage.getItem('soi_ham_hoc_data');
+      if (saved) {
+        try {
+          appState = JSON.parse(saved);
+        } catch (e) {
+          console.error("Lỗi đọc dữ liệu:", e);
+        }
+      }
+    }
+
+    // 2. LƯU DỮ LIỆU VÀO LOCALSTORAGE
+    function saveData() {
+      localStorage.setItem('soi_ham_hoc_data', JSON.stringify(appState));
+    }
+
+    // 3. TỰ ĐỘNG PHÁT HIỆN SANG NGÀY MỚI (GIỮ STREAK)
+    function checkNewDayAuto() {
+      const todayStr = new Date().toISOString().slice(0, 10);
+      if (appState.lastDate && appState.lastDate !== todayStr) {
+        // Đã qua ngày mới! Tự động tăng streak nếu hôm trước có điểm
+        if (appState.score >= 50) {
+          appState.streak = (appState.streak || 0) + 1;
+        }
+        // Reset điểm ngày
+        appState.score = 0;
+        appState.tasks = {};
+        appState.lastDate = todayStr;
+        saveData();
+      }
+    }
+
+    // 4. TICK CÔNG VIỆC VÀ CỘNG ĐIỂM
+    function toggleTask(taskId, points) {
+      const checkbox = document.getElementById(taskId);
+      if (!checkbox) return;
+
+      if (checkbox.checked) {
+        appState.tasks[taskId] = true;
+        appState.score = Math.min(100, (appState.score || 0) + points);
+        playChime();
+        if (appState.score >= 100) triggerConfetti();
+      } else {
+        delete appState.tasks[taskId];
+        appState.score = Math.max(0, (appState.score || 0) - points);
+      }
+
+      saveData();
+      updateUI();
+    }
+
+    // 5. CẬP NHẬT GIAO DIỆN CHUẨN XÁC
+    function updateUI() {
+      // Cập nhật điểm số
+      const score = appState.score || 0;
+      document.getElementById('score-text').innerText = `${score}/100đ`;
+      document.getElementById('progress-bar-fill').style.width = `${score}%`;
+
+      // Cập nhật huy hiệu thứ hạng ngày
+      const badge = document.getElementById('tier-badge');
+      if (score >= 90) {
+        badge.innerText = "Sói Rực Rỡ 🐺🔥";
+        badge.className = "text-[11px] px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 font-bold border border-amber-500/40";
+      } else if (score >= 70) {
+        badge.innerText = "Tuyệt vời ⭐";
+        badge.className = "text-[11px] px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/40";
+      } else if (score >= 40) {
+        badge.innerText = "Bình yên 🌿";
+        badge.className = "text-[11px] px-2 py-0.5 rounded-md bg-teal-500/20 text-teal-300 font-medium border border-teal-500/30";
+      } else {
+        badge.innerText = "Khởi động ☕";
+        badge.className = "text-[11px] px-2 py-0.5 rounded-md bg-gray-800 text-gray-300 font-medium border border-gray-700";
+      }
+
+      // Cập nhật chuỗi ngày
+      document.getElementById('streak-count').innerText = `${appState.streak || 14} ngày`;
+
+      // Phục hồi trạng thái checkbox
+      for (const [taskId, isChecked] of Object.entries(appState.tasks || {})) {
+        const el = document.getElementById(taskId);
+        if (el) el.checked = isChecked;
+      }
+
+      // Phục hồi các ghi chú
+      if (appState.notes) {
+        if (document.getElementById('teaching-notes')) document.getElementById('teaching-notes').value = appState.notes.teaching || "";
+        if (document.getElementById('study-diary')) document.getElementById('study-diary').value = appState.notes.studyDiary || "";
+        if (document.getElementById('note-baonhi')) document.getElementById('note-baonhi').value = appState.notes.baonhi || "";
+        if (document.getElementById('note-baongan')) document.getElementById('note-baongan').value = appState.notes.baongan || "";
+        if (document.getElementById('note-minhhoang')) document.getElementById('note-minhhoang').value = appState.notes.minhhoang || "";
+        if (appState.notes.journal) {
+          if (document.getElementById('journal-q1')) document.getElementById('journal-q1').value = appState.notes.journal.q1 || "";
+          if (document.getElementById('journal-q2')) document.getElementById('journal-q2').value = appState.notes.journal.q2 || "";
+          if (document.getElementById('journal-q3')) document.getElementById('journal-q3').value = appState.notes.journal.q3 || "";
+        }
+      }
+    }
+
+    // 6. CHUYỂN TAB MƯỢT MÀ
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      
+      const target = document.getElementById(`content-${tabId}`);
+      if (target) target.classList.remove('hidden');
+
+      const activeBtn = document.getElementById(`tab-${tabId}`);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      // Mobile styling
+      document.querySelectorAll('nav.md\\:hidden button').forEach(b => {
+        b.classList.remove('text-amber-400');
+        b.classList.add('text-gray-400');
+      });
+      const mobBtn = document.getElementById(`m-tab-${tabId}`);
+      if (mobBtn) {
+        mobBtn.classList.remove('text-gray-400');
+        mobBtn.classList.add('text-amber-400');
+      }
+    }
+
+    // 7. BỘ ĐẾM GIỜ FOCUS POMODORO 30 PHÚT
+    let timerDuration = 30 * 60; // 30 phút
+    let timerInterval = null;
+    let isRunning = false;
+
+    function toggleStudyTimer() {
+      const btn = document.getElementById('btn-timer-start');
+      if (isRunning) {
+        clearInterval(timerInterval);
+        isRunning = false;
+        btn.innerText = "Tiếp tục";
+        btn.className = "px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-bold text-sm transition";
+      } else {
+        isRunning = true;
+        btn.innerText = "Tạm dừng";
+        btn.className = "px-6 py-2.5 rounded-xl bg-rose-500 hover:bg-rose-400 text-white font-bold text-sm transition";
+        timerInterval = setInterval(() => {
+          if (timerDuration > 0) {
+            timerDuration--;
+            const mins = Math.floor(timerDuration / 60).toString().padStart(2, '0');
+            const secs = (timerDuration % 60).toString().padStart(2, '0');
+            document.getElementById('timer-display').innerText = `${mins}:${secs}`;
+          } else {
+            clearInterval(timerInterval);
+            isRunning = false;
+            playChime();
+            triggerConfetti();
+            alert("🎉 Chúc mừng Sói! Bạn đã hoàn thành trọn vẹn 30 phút học tập đam mê!");
+            btn.innerText = "Bắt đầu học";
+          }
+        }, 1000);
+      }
+    }
+
+    function resetStudyTimer() {
+      clearInterval(timerInterval);
+      isRunning = false;
+      timerDuration = 30 * 60;
+      document.getElementById('timer-display').innerText = "30:00";
+      const btn = document.getElementById('btn-timer-start');
+      btn.innerText = "Bắt đầu học";
+      btn.className = "px-6 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-sm transition";
+    }
+
+    // 8. ĐỔI CÂU NÓI TRUYỀN CẢM HỨNG
+    function randomQuote() {
+      const randomIndex = Math.floor(Math.random() * quotes.length);
+      document.getElementById('quote-display').innerText = `"${quotes[randomIndex]}"`;
+    }
+
+    // 9. LƯU GHI CHÚ
+    function saveTeachingNotes() {
+      if (!appState.notes) appState.notes = {};
+      appState.notes.teaching = document.getElementById('teaching-notes').value;
+      saveData();
+      alert("Đã lưu ghi chú bài dạy thành công!");
+    }
+
+    function saveStudyDiary() {
+      if (!appState.notes) appState.notes = {};
+      appState.notes.studyDiary = document.getElementById('study-diary').value;
+      saveData();
+      playChime();
+      alert("Đã lưu kho tri thức hôm nay! (+XP)");
+    }
+
+    function saveKidsNotes() {
+      if (!appState.notes) appState.notes = {};
+      appState.notes.baonhi = document.getElementById('note-baonhi').value;
+      appState.notes.baongan = document.getElementById('note-baongan').value;
+      appState.notes.minhhoang = document.getElementById('note-minhhoang').value;
+      saveData();
+      playChime();
+      alert("Đã lưu trọn vẹn khoảnh khắc bên 3 con yêu! (+20đ)");
+    }
+
+    function saveOneMinuteJournal() {
+      if (!appState.notes) appState.notes = {};
+      appState.notes.journal = {
+        q1: document.getElementById('journal-q1').value,
+        q2: document.getElementById('journal-q2').value,
+        q3: document.getElementById('journal-q3').value,
+      };
+      saveData();
+      triggerConfetti();
+      alert("🌙 Đã khép lại một ngày bình an. Chúc Sói ngủ thật ngon để đón gió sớm ngày mai!");
+    }
+
+    function addTeachingTaskToToday() {
+      alert("Đã thêm gợi ý giảng dạy vào danh sách ưu tiên của bạn!");
+      switchTab('today');
+    }
+
+    function pingCall(name) {
+      alert(`Đã hoàn thành kết nối yêu thương cùng ${name}! (+5đ)`);
+    }
+
+    function logFinance() {
+      const val = document.getElementById('finance-amount').value;
+      if (val) {
+        alert(`Đã ghi chép số tiền: ${Number(val).toLocaleString()}đ`);
+        document.getElementById('finance-amount').value = '';
+      }
+    }
+
+    function checkAllDaily() {
+      const tasks = ['task-run', 'task-zen', 'task-study-eng', 'task-study-ai', 'task-kids', 'task-teach', 'task-biz', 'task-connect', 'task-finance-journal'];
+      tasks.forEach(id => {
+        const el = document.getElementById(id);
+        if (el && !el.checked) {
+          el.checked = true;
+          appState.tasks[id] = true;
+        }
+      });
+      appState.score = 100;
+      saveData();
+      updateUI();
+      triggerConfetti();
+    }
+
+    // 10. AI COACH MESSAGE TẠO NĂNG LƯỢNG
+    function generateAiCoachMessage(type) {
+      const el = document.getElementById('ai-daily-message');
+      if (type === 'morning') {
+        el.innerText = "🌅 Chào Sói! Sớm mai thật mát lành. Chạy vài cây số đón gió, trò chuyện cùng học trò và tối về ôm 3 con. Cuộc sống chỉ giản dị và đẹp đẽ như thế!";
+      } else {
+        el.innerText = "🌙 Một ngày trọn vẹn đã trôi qua. Những gì chưa xong cứ thảnh thơi để mai, buông bỏ suy nghĩ và ngủ thật sâu trước 22h00 nhé Sói!";
+      }
+      playChime();
+    }
+
+    // 11. HỆ THỐNG ÂM THANH & HIỆU ỨNG PHÁO HOA
+    function playChime() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
+        osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.15); // A5
+        gain.gain.setValueAtTime(0.12, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.35);
+      } catch (e) {}
+    }
+
+    function triggerConfetti() {
+      if (typeof confetti === 'function') {
+        confetti({
+          particleCount: 70,
+          spread: 60,
+          origin: { y: 0.7 }
+        });
+      }
+    }
+
+    // 12. CÁC HÀM QUẢN LÝ DỮ LIỆU & RESET (MODAL)
+    function openDataModal() {
+      document.getElementById('data-modal').classList.remove('hidden');
+    }
+
+    function closeDataModal() {
+      document.getElementById('data-modal').classList.add('hidden');
+    }
+
+    function resetDailyNewDay() {
+      if (confirm("Bắt đầu ngày mới? Toàn bộ tick việc hôm nay sẽ về 0/100đ, nhưng giữ nguyên chuỗi Streak 🔥.")) {
+        appState.score = 0;
+        appState.tasks = {};
+        appState.lastDate = new Date().toISOString().slice(0, 10);
+        saveData();
+        updateUI();
+        closeDataModal();
+        alert("🌅 Chào ngày mới rực rỡ! Điểm đã sẵn sàng để bạn tận hưởng hôm nay.");
+      }
+    }
+
+    function exportDataJson() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `soi_ham_hoc_backup_${new Date().toISOString().slice(0,10)}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    }
+
+    function copyDataText() {
+      const str = JSON.stringify(appState);
+      navigator.clipboard.writeText(str).then(() => {
+        alert("Đã sao chép mã dữ liệu vào bộ nhớ tạm! Bạn có thể dán gửi vào Zalo hoặc Cloud.");
+      });
+    }
+
+    function importDataJson() {
+      const input = document.getElementById('import-json-input').value.trim();
+      if (!input) {
+        alert("Vui lòng dán mã dữ liệu sao lưu vào ô!");
+        return;
+      }
+      try {
+        const parsed = JSON.parse(input);
+        appState = parsed;
+        saveData();
+        updateUI();
+        closeDataModal();
+        alert("Khôi phục dữ liệu thành công 100%!");
+      } catch (err) {
+        alert("Mã dữ liệu không hợp lệ! Vui lòng kiểm tra lại.");
+      }
+    }
+
+    function factoryReset() {
+      if (confirm("CẢNH BÁO: Hành động này sẽ xóa sạch toàn bộ điểm số, chuỗi streak và ghi chú về con cái. Bạn có chắc chắn muốn làm lại từ đầu không?")) {
+        localStorage.removeItem('soi_ham_hoc_data');
+        location.reload();
+      }
+    }
+  </script>
+</body>
+</html>
